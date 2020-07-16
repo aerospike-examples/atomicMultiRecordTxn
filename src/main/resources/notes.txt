@@ -1,0 +1,21 @@
+Done
+----
+
+Refactor to use KeyAsString sub-class
+ProhibitedDelimiter super class
+We're picking up locks in the txn namespace
+Looking for transactions should be a query, not a scan
+Allow lock for same txnid
+Have AerospikeClientExtended implement an interface
+Be more specific about exceptions in put method
+Check that errors are re-thrown where they need to be
+Do something about keyformatexception
+Perhaps put exceptions in interface class
+Check use of policy
+Make sure inserts can be rolled back
+
+Notes
+-----
+
+iptables -A INPUT -p tcp --destination-port 3000 -j DROP
+

@@ -1,0 +1,45 @@
+1)
+
+For each update, record the previous state of the record prior to the update and hold this in a record with PK=TXN_ID.
+Put the start time of the txn in here as well.
+Use a map to hold the ‘old’ versions ( so looks like {PK_1:Record1_v1, PK_2:Record2_v2, … }
+
+DONE
+
+2)
+
+If you are updating a record with PK <PK> then to lock the record insert a record with PK <PK>_LOCK.
+This will fail if someone else has locked the record. Include TXN_ID in the record. Rollback ( see below ) if locking fails
+
+DONE
+
+3)
+
+On completion of the txn delete your PK=TXN_ID record ( this is your commit step) , followed by your locks.
+
+DONE
+
+4)
+
+Rollback happens asynchronously ( or could be invoked) . TXN records more than a certain age get rolled back.
+
+DONE
+
+5)
+
+If you fail while updating PK_1, PK_2 in steps 1 & 2 etc rollback will be able to restore the previous versions of the records.
+The TXN record is deleted once the data restore is complete - this marks rollback complete
+After rollback complete, delete the record locks.
+
+DONE
+
+6)
+
+If you fail while removing locks in step 3, a separate time out process will traverse the locks periodically and remove orphan records
+i.e. those which do not have an existing txn id and are beyond a certain age
+This situation can occur when
+
+1)  A txn record has been deleted ( means txn complete ) but deletion of locks did not run to completion.
+2)  Lock taking initiated but associated txn record not written
+
+DONE
