@@ -48,5 +48,11 @@ You can specifically set the policies used in creating, reading and deleting loc
 
 Rollback puts a lock on the transaction record of the transaction being rolled back so no - simultaneous rollback is not possible.
 
+**Are deadlocks possible?**
+
+No. If a transaction cannot acquire all locks required, it will not execute, but will instead exit with a lock acquire exception. Any locks it has taken will be released.
+
+
+
 
 

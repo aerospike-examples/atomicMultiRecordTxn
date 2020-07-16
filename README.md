@@ -12,7 +12,15 @@ It does this by
 
 A TransactionManager class is available for rolling back failed transactions and for removing timed out orphan locks.
 
-**Caveat** Although transactions are atomic, they are not isolated. Dirty reads are possible, although you can mitigate this by checking whether records are currently part of a transaction (locked), or by making use of optimistic locking techniques (see below).
+## Caveats
+
+Although transactions are atomic, they are not isolated. Dirty reads are possible, although you can mitigate this by checking whether records are currently part of a transaction (locked), or by making use of optimistic locking techniques (see below).
+
+Use of this library does not guard against non-transactional single record (standard) use, although the [generation check capability](#genCheck) goes some way to guarding against this. Recommended strategy is to mandate use of this library for all operations on objects which might be part of multi-record transactions. This deals with the above caveat.
+
+The locking method used in this repository has been criticized - see [http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html](http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html). In summary this says that seemingly aborted txns and orphan locks could still be active in pathological scenarios. Although this is unlikely, the implications for your own use case should be carefully considered.
+
+It is designed for relatively low volume use. You should test to see if it is appropriate for your needs. There may be potential possible optimizations.
 
 ## Usage
 
@@ -55,7 +63,7 @@ tm.removeOrphanLocks();
 
 This should be run with a given frequency, or preceding each update
 
-### Atomic write incorporating generation check
+### <a name="genCheck"></a>Atomic write incorporating generation check
 
 Using generation check to make sure records have not been updated via Single Record transactions
 
@@ -86,7 +94,7 @@ If you have further questions you may find the answers in the [FAQ](FAQ.md).
 
 JavaDoc available at [javadoc](javadoc/index.html)
 
-Jar available at [multiRecordTxn.jar](out/artifacts/multi_record_txn_jar/multi-record-txn.jar)
+Jar available at [multiRecordTxn.jar](artifacts/multi-record-txn.jar)
 
 ## Performance
 
