@@ -1,6 +1,7 @@
 package com.aerospike.txnSupport;
 
 import com.aerospike.client.*;
+import com.aerospike.client.Record;
 import com.aerospike.client.policy.*;
 import com.aerospike.client.query.PredExp;
 
@@ -11,7 +12,7 @@ public class AerospikeClientWithTxnSupport extends AerospikeClient implements Tx
     /**
      * Member variables
      */
-    private String transactionNamespace;
+    private final String transactionNamespace;
     private WritePolicy txnWritePolicy;
     private Policy txnReadPolicy;
     private BatchPolicy txnBatchReadPolicy;
@@ -175,7 +176,7 @@ public class AerospikeClientWithTxnSupport extends AerospikeClient implements Tx
         // Store previous versions of timedOutTxnIDs
 
         // Get the keys in a usable form
-        Key[] keyArray = recordsForUpdate.keySet().toArray(new Key[recordsForUpdate.size()]);
+        Key[] keyArray = recordsForUpdate.keySet().toArray(new Key[0]);
 
         // Then store versions of objects in a hash - using keys comprised of setName and userKey, concatenated using '::' delimiter
         HashMap<String,Map<String,Object>> txnRecords;
@@ -192,7 +193,7 @@ public class AerospikeClientWithTxnSupport extends AerospikeClient implements Tx
                 key = txnKeys.next();
                 if(generationCheckMap.get(key) != null) {
                     writePolicy.generationPolicy = GenerationPolicy.EXPECT_GEN_EQUAL;
-                    writePolicy.generation = generationCheckMap.get(key).intValue();
+                    writePolicy.generation = generationCheckMap.get(key);
                 }
                 else{
                     writePolicy.generationPolicy = GenerationPolicy.NONE;
@@ -212,7 +213,7 @@ public class AerospikeClientWithTxnSupport extends AerospikeClient implements Tx
         catch(AerospikeException e){
             rollback(transactionNamespace,txnRecords,txnID);
             if(e.getResultCode() == ResultCode.GENERATION_ERROR ){
-                throw(new GenFailException(key,txnID));
+                throw (new GenFailException(key,txnID));
             }
             else {
                 throw (new TxnException(txnID,e));
@@ -344,7 +345,7 @@ public class AerospikeClientWithTxnSupport extends AerospikeClient implements Tx
      * @param txnRecords - Previous versions of the timedOutTxnIDs
      * @param txnID - Transaction ID
      */
-    private void rollback(String transactionNamespace, HashMap<String,Map<String,Object>> txnRecords, String txnID){
+    private void rollback(String transactionNamespace, Map<String,Map<String,Object>> txnRecords, String txnID){
         Iterator<String> txnKeys = txnRecords.keySet().iterator();
         Vector<Key> asKeys = new Vector<Key>();
         // Rollback previous commits
@@ -379,8 +380,8 @@ public class AerospikeClientWithTxnSupport extends AerospikeClient implements Tx
         String rollbackTxnID = TxnSupport.uniqueTxnID();
         createLock(keyForTxnID(txnID),rollbackTxnID);
         Record r = get(txnReadPolicy,keyForTxnID(txnID),txnID);
-        HashMap<String,Map<String,Object>> retrievedTxnRecords =
-                (HashMap<String,Map<String,Object>>)r.getMap(AerospikeClientWithTxnSupport.PREVIOUS_RECORD_VERSION_BIN_NAME);
+        Map<String,Map<String,Object>> retrievedTxnRecords =
+                (Map<String,Map<String,Object>>)r.getMap(AerospikeClientWithTxnSupport.PREVIOUS_RECORD_VERSION_BIN_NAME);
         rollback(transactionNamespace, retrievedTxnRecords,txnID);
         removeLock(keyForTxnID(txnID),rollbackTxnID);
     }
@@ -580,9 +581,9 @@ public class AerospikeClientWithTxnSupport extends AerospikeClient implements Tx
      * Digest is serialized / de-serialized to ensure type information preserved
      */
     public static class KeyAsString{
-        private String set;
-        private String namespace;
-        private byte[] digest;
+        private final String set;
+        private final String namespace;
+        private final byte[] digest;
 
         /**
          * Store the namespace/set/userKey components of a Key, to marshal them as a String

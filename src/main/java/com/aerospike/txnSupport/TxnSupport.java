@@ -3,9 +3,7 @@ package com.aerospike.txnSupport;
 import com.aerospike.client.AerospikeException;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
-import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.WritePolicy;
-import com.aerospike.txnSupport.AerospikeClientWithTxnSupport;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -112,8 +110,8 @@ public interface TxnSupport {
      */
     class LockAcquireException extends Exception {
 
-        private Key key;
-        private String txnID;
+        private final Key key;
+        private final String txnID;
 
         public LockAcquireException(Key key, String txnID)
         {
@@ -140,15 +138,14 @@ public interface TxnSupport {
      */
     class GenFailException extends Exception {
 
-        private Key key;
-        private String txnID;
+        private final Key key;
+        private final String txnID;
 
         public GenFailException(Key key, String txnID)
         {
             super("Generation check failed for key "+key.toString()+ "for txn id "+txnID);
             this.key = key;
             this.txnID = txnID;
-
         }
 
         public Key getKey() {
@@ -166,7 +163,7 @@ public interface TxnSupport {
      */
     class TxnException extends AerospikeException {
 
-        private String txnID;
+        private final String txnID;
 
         public TxnException(String txnID, AerospikeException e)
         {

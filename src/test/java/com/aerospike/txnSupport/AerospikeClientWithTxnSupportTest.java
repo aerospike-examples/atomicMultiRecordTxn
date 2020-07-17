@@ -1,8 +1,7 @@
 package com.aerospike.txnSupport;
 
-import static org.junit.Assert.assertEquals;
-
 import com.aerospike.client.*;
+import com.aerospike.client.Record;
 import com.aerospike.client.policy.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,10 +34,10 @@ public class AerospikeClientWithTxnSupportTest {
         aerospikeClientWithTxnSupport.setEnterprise(false);
     }
 
-    @Test
     /**
      * Check you can't lock the same record twice with different txn ids
      */
+    @Test
     public void cantLockSameRecordTwiceWithDifferentTxnID() throws AerospikeClientWithTxnSupport.LockAcquireException {
         String testUserKey = "ABCD";
         String txnID1 = TxnSupport.uniqueTxnID();
@@ -61,10 +60,10 @@ public class AerospikeClientWithTxnSupportTest {
         }
     }
 
-    @Test
     /**
      * Check you can't lock the same record twice with different txn ids
      */
+    @Test
     public void canLockSameRecordTwiceWithSameTxnID() throws AerospikeClientWithTxnSupport.LockAcquireException{
         String testUserKey = "ABCD";
         String txnID = TxnSupport.uniqueTxnID();
@@ -85,10 +84,10 @@ public class AerospikeClientWithTxnSupportTest {
         }
     }
 
-    @Test
     /**
      * Check that a lock removed when the correct transaction id is supplied
      */
+    @Test
     public void canRemoveLock()  throws AerospikeClientWithTxnSupport.LockAcquireException{
         // Create a lock for a fictitious key for a given txn id
         String testUserKey = "ABCD";
@@ -102,10 +101,10 @@ public class AerospikeClientWithTxnSupportTest {
         Assert.assertFalse(aerospikeClientWithTxnSupport.lockExists(key));
     }
 
-    @Test
     /**
      * Check that a lock is only removed when the correct transaction id is supplied
      */
+    @Test
     public void cantRemoveLockForDifferentTransaction()  throws AerospikeClientWithTxnSupport.LockAcquireException{
         // Create a lock for a fictitious key for a given txn id
         String testUserKey = "ABCD";
@@ -124,11 +123,11 @@ public class AerospikeClientWithTxnSupportTest {
         Assert.assertFalse(aerospikeClientWithTxnSupport.lockExists(key));
     }
 
-    @Test
     /**
      * Check that if we look to update objects with keys key1/key2 then an exception is thrown
      * if one of those objects is already locked
      */
+    @Test
     public void exceptionRaisedWhenRecordLocksExist() throws AerospikeClientWithTxnSupport.LockAcquireException{
         /*
             Setup
@@ -187,10 +186,10 @@ public class AerospikeClientWithTxnSupportTest {
         }
     }
 
-    @Test
     /**
      * Check that we get the correct result, with no locks, no txn record if no errors
      */
+    @Test
     public void checkNoLocksNoTxnRecordCorrectResultForNoErrorTxn(){
         /*
             Setup
@@ -405,10 +404,10 @@ public class AerospikeClientWithTxnSupportTest {
 
     }
 
-    @Test
     /**
      * Check that we get the correct result for a delete, with no locks, no txn record if no errors
      */
+    @Test
     public void checkCorrectResultForDelete(){
         /*
             Setup
@@ -460,7 +459,6 @@ public class AerospikeClientWithTxnSupportTest {
         aerospikeClientWithTxnSupport.delete(new WritePolicy(),TEST_KEY_1);
     }
 
-    @Test
     /**
      *
      * Above test is
@@ -469,17 +467,17 @@ public class AerospikeClientWithTxnSupportTest {
      *
      * Make sure that we remove any locks added as part of that transaction
      */
-
+    @Test
     public void locksRemovedWhenTxnFails() throws AerospikeClientWithTxnSupport.LockAcquireException{
         exceptionRaisedWhenRecordLocksExist();
         Assert.assertFalse(aerospikeClientWithTxnSupport.lockExists(TEST_KEY_1));
         Assert.assertFalse(aerospikeClientWithTxnSupport.lockExists(TEST_KEY_2));
     }
 
-    @Test
     /**
      * Should be able to use a transaction record to rollback to previous state
      */
+    @Test
     public void testRollback() throws AerospikeClientWithTxnSupport.LockAcquireException{
         /*
             Setup
@@ -551,10 +549,10 @@ public class AerospikeClientWithTxnSupportTest {
         aerospikeClientWithTxnSupport.delete(testWritePolicy,TEST_KEY_2);
     }
 
-    @Test
     /**
      * Should not be able to roll back a record that is already being rolled back
      */
+    @Test
     public void testRollbackFailsIfRollbackInProgress() throws AerospikeClientWithTxnSupport.LockAcquireException{
         /*
             Setup
@@ -638,10 +636,10 @@ public class AerospikeClientWithTxnSupportTest {
 
     }
 
-    @Test
     /**
      * Should be able to use a transaction record to rollback to previous state, including inserts
      */
+    @Test
     public void testRollbackFromInserts() throws AerospikeClientWithTxnSupport.LockAcquireException{
         /*
             Setup
@@ -710,10 +708,10 @@ public class AerospikeClientWithTxnSupportTest {
         aerospikeClientWithTxnSupport.delete(testWritePolicy,TEST_KEY_2);
     }
 
-    @Test
     /**
      * Should be able to use a transaction record to rollback to previous state, including deletes
      */
+    @Test
     public void testRollbackFromDeletes() throws AerospikeClientWithTxnSupport.LockAcquireException{
         /*
             Setup
@@ -784,11 +782,11 @@ public class AerospikeClientWithTxnSupportTest {
         aerospikeClientWithTxnSupport.delete(testWritePolicy,TEST_KEY_2);
     }
 
-    @Test
     /**
      * Expired transactions should be rolled back
      * Unexpired transactions should not be
      */
+    @Test
     public void testExpiredTransactionRollback() throws AerospikeClientWithTxnSupport.LockAcquireException
     {
         /*
@@ -961,12 +959,12 @@ public class AerospikeClientWithTxnSupportTest {
 
     }
 
-    @Test
     /**
      * Orphan locks that have 'timed out' should be removed by removeOrphanLocks
      * Orphan locks that have not timed out should not be removed
      * Non-orphan locks should not be removed, regardless of timeout
      */
+    @Test
     public void testOrphanLockHarvest() throws AerospikeClientWithTxnSupport.LockAcquireException{
         /*
             Setup transaction with locks
@@ -1024,11 +1022,11 @@ public class AerospikeClientWithTxnSupportTest {
         aerospikeClientWithTxnSupport.delete(testWritePolicy,new Key(TestConstants.TEST_NAMESPACE, AerospikeClientWithTxnSupport.TRANSACTION_SET,txnID));
     }
 
-    @Test
     /**
      * Check byte array to string conversions are correct by doing byte[] -> string -> byte[]
      * and that original is recovered
      */
+    @Test
     public void testByteArrayToStringConversion(){
         Key key = new Key(TestConstants.TEST_NAMESPACE,TestConstants.AEROSPIKE_TEST_SET_NAME,"ABCDE");
         String byteArrayAsString = AerospikeClientWithTxnSupport.byteArrayToString(key.digest);
@@ -1041,13 +1039,13 @@ public class AerospikeClientWithTxnSupportTest {
 
     }
 
-    @Test
     /**
      * Check an error is thrown if using AerospikeClientWithTxnSupport in enterprise mode
      * but using vs Community. This also shows that durable deletes are enabled
      *
      * This test will fail if running vs Enterprise
      */
+    @Test
     public void checkErrorThrownWhenIsEnterpriseTrueAndUsingCommunity() throws TxnSupport.LockAcquireException {
         /*
             Setup
