@@ -19,11 +19,11 @@ public class TransactionManager {
     /**
      * Class member variables
      */
-    private AerospikeClientWithTxnSupport client;
+    private final AerospikeClientWithTxnSupport client;
     private int transactionTimeOutMillis = DEFAULT_TXN_EXPIRY_PERIOD_MILLIS;
-    private Policy indexCreateCheckReadPolicy;
-    private WritePolicy writePolicy;
-    private QueryPolicy queryPolicy =  new QueryPolicy();
+    private final Policy indexCreateCheckReadPolicy;
+    private final WritePolicy writePolicy;
+    private final QueryPolicy queryPolicy =  new QueryPolicy();
 
     /**
      * Default values
@@ -76,9 +76,8 @@ public class TransactionManager {
      */
     public int rollbackExpiredTxns() throws TxnSupport.LockAcquireException {
         int rolledBackTxns = 0;
-        Iterator<String> expiredTxnIDs = getExpiredTxnIDs().iterator();
-        while(expiredTxnIDs.hasNext()){
-            client.rollback(expiredTxnIDs.next());
+        for (String s : getExpiredTxnIDs()) {
+            client.rollback(s);
             rolledBackTxns++;
         }
         return rolledBackTxns;
@@ -112,12 +111,10 @@ public class TransactionManager {
         stmt.setFilter(Filter.equal(Constants.TYPE_BIN_NAME,AerospikeClientWithTxnSupport.LOCK_TYPE));
         stmt.setPredExp(PredExp.integerBin(AerospikeClientWithTxnSupport.TIMESTAMP_BIN_NAME),PredExp.integerValue(System.currentTimeMillis() - transactionTimeOutMillis),PredExp.integerLess());
 
-        Iterator<KeyRecord> rs = client.query(queryPolicy, stmt).iterator();
         // If the txn they are associated with does not exist remove them
-        while(rs.hasNext()){
-            KeyRecord r = rs.next();
+        for (KeyRecord r : client.query(queryPolicy, stmt)) {
             String txnID = r.record.getString(AerospikeClientWithTxnSupport.TXN_ID_BIN_NAME);
-            if(txnHash.get(txnID) == null) {
+            if (txnHash.get(txnID) == null) {
                 client.delete(writePolicy, r.key);
                 orphanLocks++;
             }
@@ -139,10 +136,8 @@ public class TransactionManager {
         txnStmt.setFilter(Filter.equal(Constants.TYPE_BIN_NAME,AerospikeClientWithTxnSupport.TXN_TYPE));
         txnStmt.setPredExp(PredExp.integerBin(AerospikeClientWithTxnSupport.TIMESTAMP_BIN_NAME),PredExp.integerValue(System.currentTimeMillis() - transactionTimeOutMillis),PredExp.integerLess());
 
-        Iterator<KeyRecord> rs = client.query(queryPolicy, txnStmt).iterator();
-
-        while(rs.hasNext()){
-            txnIDList.addElement(rs.next().record.getString(AerospikeClientWithTxnSupport.TXN_ID_BIN_NAME));
+        for (KeyRecord keyRecord : client.query(queryPolicy, txnStmt)) {
+            txnIDList.addElement(keyRecord.record.getString(AerospikeClientWithTxnSupport.TXN_ID_BIN_NAME));
         }
         return txnIDList;
     }

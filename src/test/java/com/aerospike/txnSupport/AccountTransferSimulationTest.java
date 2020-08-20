@@ -1,6 +1,7 @@
 package com.aerospike.txnSupport;
 
 import com.aerospike.client.*;
+import com.aerospike.client.Record;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.RecordExistsAction;
