@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <name>Aerospike - Atomic Multi-Record Txn Support</name>
@@ -10,7 +8,7 @@
 
     <groupId>io.github.aerospike-examples</groupId>
     <artifactId>aero-multi-record-txn</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.01</version>
 
     <licenses>
         <license>
@@ -143,6 +141,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+            </plugin>
+
         </plugins>
     </build>
 
@@ -175,7 +179,7 @@
         <developerConnection>scm:git:ssh://git@github.com:aerospike-examples/atomicMultiRecordTxn.git
         </developerConnection>
         <url>http://github.com/aerospike-examples/atomicMultiRecordTxn/tree/master</url>
-        <tag>HEAD</tag>
+        <tag>aero-multi-record-txn-0.01</tag>
     </scm>
 
 </project>

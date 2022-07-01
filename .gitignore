@@ -1,3 +1,6 @@
 .idea
 target
 build
+release.properties
+pom.xml.releaseBackup
+aero-multi-record-txn.iml

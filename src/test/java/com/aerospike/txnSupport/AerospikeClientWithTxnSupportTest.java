@@ -3,8 +3,7 @@ package com.aerospike.txnSupport;
 import com.aerospike.client.*;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +29,27 @@ public class AerospikeClientWithTxnSupportTest {
     private WritePolicy testWritePolicy = new WritePolicy();
     private Policy testReadPolicy = new Policy();
 
-    static{
+    @Before
+    public void setup() {
+        aerospikeClientWithTxnSupport.truncate(new InfoPolicy(),
+                TestConstants.TEST_NAMESPACE,TestConstants.AEROSPIKE_TEST_SET_NAME,null);
+        aerospikeClientWithTxnSupport.truncate(new InfoPolicy(),
+                TestConstants.TEST_NAMESPACE,AerospikeClientWithTxnSupport.TRANSACTION_SET,null);
+        aerospikeClientWithTxnSupport.truncate(new InfoPolicy(),
+                TestConstants.TEST_NAMESPACE,AerospikeClientWithTxnSupport.LOCK_SET,null);
         aerospikeClientWithTxnSupport.setEnterprise(false);
     }
 
+    @After
+    public void cleanup() {
+        aerospikeClientWithTxnSupport.truncate(new InfoPolicy(),
+                TestConstants.TEST_NAMESPACE,TestConstants.AEROSPIKE_TEST_SET_NAME,null);
+        aerospikeClientWithTxnSupport.truncate(new InfoPolicy(),
+                TestConstants.TEST_NAMESPACE,AerospikeClientWithTxnSupport.TRANSACTION_SET,null);
+        aerospikeClientWithTxnSupport.truncate(new InfoPolicy(),
+                TestConstants.TEST_NAMESPACE,AerospikeClientWithTxnSupport.LOCK_SET,null);
+        aerospikeClientWithTxnSupport.setEnterprise(false);
+    }
     /**
      * Check you can't lock the same record twice with different txn ids
      */
@@ -299,7 +315,7 @@ public class AerospikeClientWithTxnSupportTest {
 
             Record record1 = aerospikeClientWithTxnSupport.get(testReadPolicy,TEST_KEY_1);
             Record record2 = aerospikeClientWithTxnSupport.get(testReadPolicy,TEST_KEY_2);
-
+            System.out.println("Still here");
             Assert.assertTrue(record1.getInt("Bin-01") == 5);
             Assert.assertTrue(record1.getInt("Bin-02") == 6);
             Assert.assertTrue(record2.getInt("Bin-01") == 7);
