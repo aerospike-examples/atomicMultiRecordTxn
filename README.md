@@ -1,5 +1,9 @@
 # Aerospike - Atomic Multi-Record Txn Support
 
+## This content is obsolete
+[Aerospike Database 8](https://download.aerospike.com/artifacts/aerospike-server-enterprise/latest/) (and Java client [version 9.0.1](https://download.aerospike.com/download/client/java/notes.html)) adds multi-record transaction (MRT) functionality to `strong-consistency true` (SC) namespaces.
+
+## Overview
 This repository allows execution of atomic multi-record transactions within Aerospike.
 
 It does this by
